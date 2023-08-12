@@ -12,7 +12,7 @@ int minKey(int key[], bool mstSet[], int V) {
     return min_index;
 }
 
-int primMST(int graph[MAX_VERTICES][MAX_VERTICES], int V) {
+int primMST(int graph[MAX_VERTICES][MAX_VERTICES], int V, int startVertex) {
     int parent[MAX_VERTICES];
     int key[MAX_VERTICES];
     bool mstSet[MAX_VERTICES];
@@ -20,8 +20,8 @@ int primMST(int graph[MAX_VERTICES][MAX_VERTICES], int V) {
     for (int i = 0; i < V; i++)
         key[i] = __INT_MAX__, mstSet[i] = false;
 
-    key[0] = 0;
-    parent[0] = -1;
+    key[startVertex] = 0;
+    parent[startVertex] = -1;
 
     for (int count = 0; count < V - 1; count++) {
         int u = minKey(key, mstSet, V);
@@ -53,8 +53,12 @@ int main() {
         }
     }
 
+    int startVertex;
+    printf("Enter the starting vertex (0 to %d): ", V - 1);
+    scanf("%d", &startVertex);
+
     clock_t start = clock();
-    int minRouteDistance = primMST(graph, V);
+    int minRouteDistance = primMST(graph, V, startVertex);
     clock_t end = clock();
 
     printf("Minimum driving route distance: %d\n", minRouteDistance);
