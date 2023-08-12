@@ -1,11 +1,11 @@
 #include <stdio.h>
 #include <time.h>
-#define max 30
+#define max 10
 
 struct queue {
     int f;
     int r;
-    int arr[max];
+    int arr[30];
 };
 
 int isfull(struct queue *q) {
@@ -24,7 +24,7 @@ int isEmpty(struct queue *q) {
 
 void enqueue(struct queue *q, int val) {
     if (q->r == max - 1) {
-        printf("Queue is Full\n");
+        printf("Queue is Full \n");
     } else {
         q->r++;
         q->arr[q->r] = val;
@@ -34,7 +34,7 @@ void enqueue(struct queue *q, int val) {
 int dequeue(struct queue *q) {
     int a = -1;
     if (q->f == q->r) {
-        printf("Queue is Empty\n");
+        printf("Queue is Empty \n");
     } else {
         q->f++;
         a = q->arr[q->f];
@@ -44,7 +44,7 @@ int dequeue(struct queue *q) {
 
 void print_queue(struct queue *q) {
     for (int i = q->f; i <= q->r; i++) {
-        printf("%d\t", q->arr[i]);
+        printf("%d \t", q->arr[i]);
     }
     printf("\n");
 }
@@ -58,40 +58,38 @@ int main() {
     q.f = 0;
     q.r = 0;
 
-    int num_vertices, num_edges;
+    int n, start;
     printf("Enter the number of vertices: ");
-    scanf("%d", &num_vertices);
-    printf("Enter the number of edges: ");
-    scanf("%d", &num_edges);
-
-    int visited[num_vertices];
-    for (int i = 0; i < num_vertices; i++) {
+    scanf("%d", &n);
+    
+    int visited[n];
+    for (int i = 0; i < n; i++) {
         visited[i] = 0;
     }
 
-    int a[max][max] = {0}; // Initialize adjacency matrix
-
-    printf("Enter the adjacency matrix (%d x %d):\n", num_vertices, num_vertices);
-    for (int i = 0; i < num_edges; i++) {
-        int u, v;
-        scanf("%d %d", &u, &v);
-        a[u][v] = 1;
-        a[v][u] = 1; // Assuming an undirected graph
+    int a[n][n];
+    printf("Enter the adjacency matrix:\n");
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            scanf("%d", &a[i][j]);
+        }
     }
 
-    int start_vertex;
     printf("Enter the starting vertex: ");
-    scanf("%d", &start_vertex);
+    scanf("%d", &start);
 
-    visited[start_vertex] = 1;
-    enqueue(&q, start_vertex);
+    visited[start] = 1;
+    enqueue(&q, start);
+
+    printf("Breadth-First Traversal: ");
 
     while (!isEmpty(&q)) {
         int node = dequeue(&q);
 
-        for (int j = 0; j < num_vertices; j++) {
+        printf("%d ", node);
+
+        for (int j = 0; j < n; j++) {
             if (a[node][j] == 1 && visited[j] == 0) {
-                printf("%d ", j);
                 visited[j] = 1;
                 enqueue(&q, j);
             }
