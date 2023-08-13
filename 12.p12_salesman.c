@@ -1,96 +1,67 @@
 #include <stdio.h>
-#include <stdbool.h>
-#include <limits.h>
-#include <time.h>
 
-#define V 10 // Maximum number of cities
+#define MAX_CITIES 10
+#define INF 999
 
-int min(int a, int b) {
-    return (a < b) ? a : b;
-}
+int costMatrix[MAX_CITIES][MAX_CITIES];
+int visited[MAX_CITIES];
+int n, minCost = INF;
+int optimalPath[MAX_CITIES];
 
-int calculateCost(int graph[V][V], int path[], int n) {
-    int cost = 0;
-    for (int i = 0; i < n - 1; i++) {
-        cost += graph[path[i]][path[i + 1]];
-    }
-    cost += graph[path[n - 1]][path[0]]; // Return to the starting city
-    return cost;
-}
-
-void copyArray(int src[], int dest[], int n) {
-    for (int i = 0; i < n; i++) {
-        dest[i] = src[i];
+void getInput() {
+    int i, j;
+    printf("Enter the number of cities: ");
+    scanf("%d", &n);
+    printf("Enter the cost matrix (Enter %d for no connection):\n", INF);
+    for (i = 0; i < n; i++) {
+        printf("Enter elements of row #%d (use %d for no connection):\n", i + 1, INF);
+        for (j = 0; j < n; j++) {
+            scanf("%d", &costMatrix[i][j]);
+        }
+        visited[i] = 0;
     }
 }
 
-void tspBranchAndBound(int graph[V][V], int bound, int cost, int path[], int level, int minCostPath[]) {
-    if (level == V - 1) {
-        int currentCost = cost + graph[path[level - 1]][path[level]] + graph[path[level]][path[0]];
-        if (currentCost < bound) {
-            bound = currentCost;
-            copyArray(path, minCostPath, V);
+void tsp(int currentCity, int depth, int currentCost, int path[]) {
+    if (depth == n - 1) {
+        int finalCost = currentCost + costMatrix[currentCity][0];
+        if (finalCost < minCost) {
+            minCost = finalCost;
+            for (int i = 0; i < n; i++) {
+                optimalPath[i] = path[i];
+            }
         }
         return;
     }
 
-    for (int i = 1; i < V; i++) {
-        if (!path[i]) {
-            int temp = bound;
-            cost += graph[path[level]][i];
-            if (level == 0) {
-                bound -= ((2 * cost) + calculateCost(graph, path, V));
-            } else {
-                bound -= ((cost) + calculateCost(graph, path, V));
-            }
-
-            if (bound + cost < temp) {
-                path[level + 1] = i;
-                tspBranchAndBound(graph, bound, cost, path, level + 1, minCostPath);
-            }
-
-            cost -= graph[path[level]][i];
-            bound = temp;
-            path[level + 1] = -1;
+    visited[currentCity] = 1;
+    path[depth] = currentCity;
+    for (int i = 0; i < n; i++) {
+        if (!visited[i]) {
+            tsp(i, depth + 1, currentCost + costMatrix[currentCity][i], path);
         }
     }
+    visited[currentCity] = 0;
+}
+
+void printPath(int path[], int size) {
+    printf("Path: ");
+    for (int i = 0; i < size; i++) {
+        printf("%d", path[i] + 1);
+        if (i < size - 1) {
+            printf(" -> ");
+        }
+    }
+    printf("\n");
 }
 
 int main() {
-    int n;
-
-    printf("Enter the number of cities (max %d): ", V);
-    scanf("%d", &n);
-
-    int graph[V][V];
-
-    printf("Enter the distance matrix:\n");
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-            scanf("%d", &graph[i][j]);
-        }
-    }
-
-    int bound = INT_MAX;
-    int cost = 0;
-    int path[V];
-    int minCostPath[V];
-    for (int i = 0; i < V; i++) {
-        path[i] = -1;
-    }
-    path[0] = 0;
-
-    clock_t start_time = clock();
-    tspBranchAndBound(graph, bound, cost, path, 0, minCostPath);
-    clock_t end_time = clock();
-    double time_taken = ((double)(end_time - start_time)) / CLOCKS_PER_SEC;
-
-    printf("Optimal Tour Path: ");
-    for (int i = 0; i < V; i++) {
-        printf("%d ", minCostPath[i]);
-    }
-    printf("\nOptimal Tour Cost: %d\n", calculateCost(graph, minCostPath, V));
-    printf("Time taken: %f seconds\n", time_taken);
-
+    getInput();
+    int path[MAX_CITIES];
+    printf("\n\nCalculating optimal path...\n");
+    tsp(0, 0, 0, path);
+    printf("Optimal ");
+    printPath(optimalPath, n);
+    printf("Minimum cost: %d\n", minCost);
     return 0;
 }
