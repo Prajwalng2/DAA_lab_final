@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
+#include <time.h>
 
 struct Edge {
     int src, dest, weight;
@@ -59,7 +60,12 @@ int main() {
     printf("Enter the source vertex: ");
     scanf("%d", &src);
 
+    clock_t start_time = clock();
     dijkstra(vertices, graph, edges, src);
+    clock_t end_time = clock();
+
+    double time_taken = ((double)(end_time - start_time)) / CLOCKS_PER_SEC;
+    printf("Time taken: %f seconds\n", time_taken);
 
     return 0;
 }
