@@ -36,7 +36,7 @@ void dijkstra(int graph[MAX_VERTICES][MAX_VERTICES], int src, int V) {
     key[src] = 0;
 
     for (int count = 0; count < V - 1; count++) {
-        int u = minDistance(key, mstSet, vertices);
+        int u = minDistance(key, mstSet, V);
         mstSet[u] = true;
 
         for (int v = 0; v < V; v++) {
