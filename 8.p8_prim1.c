@@ -37,9 +37,9 @@ int primMST(int graph[MAX_VERTICES][MAX_VERTICES], int V, int startVertex) {
         minDistance += graph[i][parent[i]];
 
     // Display the path of minimum cost
-    printf("Path of minimum cost: ");
+    printf("Path of minimum cost:\n ");
     for (int i = 1; i < V; i++)
-        printf("%d -> %d\t -> %d\n, ", parent[i], i, graph[i][parent[i]]);
+        printf("%d -> %d\t -> %d\n ", parent[i], i, graph[i][parent[i]]);
     printf("\n");
 
     return minDistance;
