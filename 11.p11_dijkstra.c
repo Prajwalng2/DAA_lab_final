@@ -1,78 +1,65 @@
 #include <stdio.h>
-#include <stdbool.h>
+#include <stdlib.h>
 #include <limits.h>
-#include <time.h>
 
-#define MAX_VERTICES 10 // Maximum number of vertices
+struct Edge {
+    int src, dest, weight;
+};
 
-int minDistance(int key[], bool mst[], int V) {
-    int min = INT_MAX, min_index;
-    for (int v = 0; v < V; v++) {
-        if (mst[v] == false && key[v] <= min) {
-            min = key[v];
-            min_index = v;
+void dijkstra(int vertices, struct Edge graph[], int edges, int src) {
+    int dist[vertices];
+    int sptSet[vertices];
+
+    for (int i = 0; i < vertices; i++) {
+        dist[i] = INT_MAX;
+        sptSet[i] = 0;
+    }
+
+    dist[src] = 0;
+
+    for (int count = 0; count < vertices - 1; count++) {
+        int u = -1;
+        for (int v = 0; v < vertices; v++) {
+            if (!sptSet[v] && (u == -1 || dist[v] < dist[u])) {
+                u = v;
+            }
         }
-    }
-    return min_index;
-}
 
-void printSolution(int key[], int V, int src) {
-    printf("Vertex \t Distance from Source\n");
-    for (int i = 0; i < V; i++) {
-        printf("%d \t %d\n", i, key[i]);
-    }
-}
+        sptSet[u] = 1;
 
-void dijkstra(int graph[MAX_VERTICES][MAX_VERTICES], int src, int V) {
-    int key[MAX_VERTICES]; // The output array to store shortest distance
-    bool mst[MAX_VERTICES]; // sptSet[i] will be true if vertex i is included in shortest path tree or shortest distance from src to i is finalized
-
-    // Initialize all distances as INFINITE and sptSet[] as false
-    for (int i = 0; i < V; i++) {
-        key[i] = INT_MAX, mst[i] = false;
-    }
-
-    // Distance of source vertex from itself is always 0
-    key[src] = 0;
-
-    for (int count = 0; count < V - 1; count++) {
-        int u = minDistance(key, mst, V);
-        mst[u] = true;
-
-        for (int v = 0; v < V; v++) {
-            if (!mst[v] && graph[u][v] && key[u] != INT_MAX && key[u] + graph[u][v] < key[v]) {
-                key[v] = key[u] + graph[u][v];
+        for (int i = 0; i < edges; i++) {
+            if (!sptSet[graph[i].dest] && graph[i].src == u && dist[u] != INT_MAX && dist[u] + graph[i].weight < dist[graph[i].dest]) {
+                dist[graph[i].dest] = dist[u] + graph[i].weight;
             }
         }
     }
 
-    printSolution(key, V, src);
+    printf("Vertex\tDistance from Source\n");
+    for (int i = 0; i < vertices; i++) {
+        printf("%d\t%d\n", i, dist[i]);
+    }
 }
 
 int main() {
-    int V, src;
+    int vertices, edges;
 
-    printf("Enter the number of vertices (max %d): ", V);
-    scanf("%d", &V);
+    printf("Enter the number of vertices: ");
+    scanf("%d", &vertices);
+    printf("Enter the number of edges: ");
+    scanf("%d", &edges);
 
-    int graph[MAX_VERTICES][MAX_VERTICES];
+    struct Edge graph[edges];
 
-    printf("Enter the weighted adjacency matrix:\n");
-    for (int i = 0; i < V; i++) {
-        for (int j = 0; j < V; j++) {
-            scanf("%d", &graph[i][j]);
-        }
+    printf("Enter the edges (src dest weight):\n");
+    for (int i = 0; i < edges; i++) {
+        scanf("%d %d %d", &graph[i].src, &graph[i].dest, &graph[i].weight);
     }
 
+    int src;
     printf("Enter the source vertex: ");
     scanf("%d", &src);
 
-    clock_t start_time = clock();
-    dijkstra(graph, src, V);
-    clock_t end_time = clock();
-    double time_taken = ((double)(end_time - start_time)) / CLOCKS_PER_SEC;
-
-    printf("Time taken: %f seconds\n", time_taken);
+    dijkstra(vertices, graph, edges, src);
 
     return 0;
 }
